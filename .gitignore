@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# Local scratch and secrets
+.env
+.env.*
+*.local.*
+.claude/settings.local.json
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
