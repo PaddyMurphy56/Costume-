@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/PaddyMurphy56/Costume-/schemas/site.schema.json",
+  "title": "Site Atlas registry",
+  "description": "Contract v0 for registry/sites.yaml. Session 1 (Site Atlas) owns this schema and may revise it; bump schema_version when it does. Validate one record with: uv run costume-validate <file> schemas/site.schema.json --def SiteRecord",
+  "type": "object",
+  "required": ["schema_version", "sites"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"type": "string", "pattern": "^0\\.[0-9]+$"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "sites": {"type": "array", "items": {"$ref": "#/$defs/SiteRecord"}}
+  },
+  "$defs": {
+    "Segment": {
+      "enum": [
+        "general-marketplace",
+        "fashion-resale",
+        "vintage-antique",
+        "auction-estate",
+        "thrift-online",
+        "liquidation-returns",
+        "local-classifieds",
+        "international-proxy",
+        "costume-prop-halloween",
+        "luggage-office",
+        "deal-aggregator",
+        "other"
+      ]
+    },
+    "AccessMethod": {
+      "enum": [
+        "alexandria-provider",
+        "official-api",
+        "firecrawl-scrape",
+        "firecrawl-search-site",
+        "websearch-site",
+        "manual-only",
+        "none"
+      ]
+    },
+    "Blocker": {
+      "enum": [
+        "login-wall",
+        "captcha",
+        "bot-protection",
+        "geo-block",
+        "js-only",
+        "rate-limit",
+        "tos-prohibits",
+        "app-only",
+        "none"
+      ]
+    },
+    "Source": {
+      "type": "object",
+      "required": ["url"],
+      "additionalProperties": false,
+      "properties": {
+        "url": {"type": "string", "pattern": "^https?://"},
+        "note": {"type": "string"}
+      }
+    },
+    "ProbeAttempt": {
+      "type": "object",
+      "required": ["method", "result", "evidence", "probed_at"],
+      "additionalProperties": false,
+      "properties": {
+        "method": {"$ref": "#/$defs/AccessMethod"},
+        "result": {"enum": ["ok", "partial", "blocked", "error"]},
+        "evidence": {"type": "string", "minLength": 1},
+        "probed_at": {"type": "string", "format": "date"}
+      }
+    },
+    "SiteRecord": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "url",
+        "segments",
+        "inventory",
+        "status",
+        "tier",
+        "access",
+        "sources",
+        "last_verified"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "description": "Stable kebab-case id, usually derived from the domain (ebay, shopgoodwill, ruby-lane)."
+        },
+        "name": {"type": "string", "minLength": 1},
+        "url": {"type": "string", "pattern": "^https?://"},
+        "aliases": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Other domains, app names or former names that point at the same inventory."
+        },
+        "segments": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/Segment"}
+        },
+        "inventory": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": ["used", "new", "vintage", "handmade", "refurbished", "overstock"]}
+        },
+        "categories": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Free-text category coverage, e.g. bags, luggage, menswear, costumes, props."
+        },
+        "region": {"type": "string", "description": "Home market, e.g. US, UK, JP, global."},
+        "ships_to_us": {"enum": ["yes", "no", "via-proxy", "local-pickup-only", "unknown"]},
+        "buyer_fees": {"type": "string", "description": "Buyer premium or service fees, with source."},
+        "price_band": {"enum": ["budget", "mid", "premium", "mixed", "unknown"]},
+        "search": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "url_template": {
+              "type": "string",
+              "pattern": "\\{query\\}",
+              "description": "Search URL with a {query} placeholder, e.g. https://www.ebay.com/sch/i.html?_nkw={query}"
+            },
+            "filters": {
+              "type": "array",
+              "items": {"type": "string"},
+              "description": "URL-level filters the site supports, e.g. price_max, condition, sort, category."
+            },
+            "notes": {"type": "string"}
+          }
+        },
+        "access": {
+          "type": "object",
+          "required": ["best_method", "methods_tried"],
+          "additionalProperties": false,
+          "properties": {
+            "best_method": {"$ref": "#/$defs/AccessMethod"},
+            "methods_tried": {"type": "array", "items": {"$ref": "#/$defs/ProbeAttempt"}},
+            "blockers": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/Blocker"}},
+            "last_probed": {"type": "string", "format": "date"}
+          }
+        },
+        "tag_conventions": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "How sellers label items here. Session 2 (Tagger) uses this to emit site-specific tags.",
+          "properties": {
+            "hashtags": {"type": "boolean"},
+            "max_tags": {"type": "integer", "minimum": 0},
+            "attribute_fields": {"type": "array", "items": {"type": "string"}},
+            "notes": {"type": "string"}
+          }
+        },
+        "tier": {
+          "enum": ["S", "A", "B", "C"],
+          "description": "S = high yield and working access; A = strong but partial; B = niche or search-engine-only; C = blocked, login-only or long tail."
+        },
+        "status": {"enum": ["live", "defunct", "merged", "unknown"]},
+        "sources": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/Source"}},
+        "discovered_by": {"type": "string", "description": "Agent and run that found it, e.g. site-scout/auction-estate/2026-09-30."},
+        "last_verified": {"type": "string", "format": "date"},
+        "notes": {"type": "string"}
+      }
+    }
+  }
+}

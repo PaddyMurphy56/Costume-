@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/PaddyMurphy56/Costume-/schemas/brief.schema.json",
+  "title": "Costume brief",
+  "description": "The shopping brief every system reads its constraints from (config/brief.yaml).",
+  "type": "object",
+  "required": ["brief_version", "character", "use", "dates", "budget", "owned", "needed"],
+  "properties": {
+    "brief_version": {"type": "integer", "minimum": 1},
+    "character": {"type": "string", "minLength": 1},
+    "look": {"type": "string"},
+    "use": {"type": "string"},
+    "dates": {
+      "type": "object",
+      "required": ["buy_by", "event"],
+      "properties": {
+        "created": {"type": "string", "format": "date"},
+        "buy_by": {"type": "string", "format": "date"},
+        "event": {"type": "string", "format": "date"}
+      }
+    },
+    "budget": {
+      "type": "object",
+      "required": ["currency", "total_max", "includes_shipping", "includes_tax"],
+      "properties": {
+        "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+        "total_max": {"type": "number", "exclusiveMinimum": 0},
+        "includes_shipping": {"type": "boolean"},
+        "includes_tax": {"type": "boolean"},
+        "est_tax_rate": {"type": "number", "minimum": 0, "maximum": 0.2}
+      }
+    },
+    "owned": {"type": "array", "items": {"type": "string"}},
+    "needed": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "must"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+          "must": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+          "prefer": {"type": "array", "items": {"type": "string"}},
+          "avoid": {"type": "array", "items": {"type": "string"}},
+          "size": {"type": "object"},
+          "note": {"type": "string"}
+        }
+      }
+    }
+  }
+}

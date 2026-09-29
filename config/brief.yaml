@@ -1,0 +1,67 @@
+# The costume brief: the first real job the shopping system has to serve.
+# Every system (Site Atlas, Tagger, Hunter) reads its constraints from here.
+# Validated by schemas/brief.schema.json.
+
+brief_version: 2
+character: Patrick Bateman (American Psycho, 2000)
+look: 1980s Wall Street executive
+use: one-time costume
+
+dates:
+  created: 2026-09-29
+  buy_by: 2026-10-15   # last day to order so slow resale shipping still lands
+  event: 2026-10-31
+
+budget:
+  currency: USD
+  total_max: 75
+  includes_shipping: true
+  includes_tax: true
+  est_tax_rate: 0.08     # placeholder until the buyer's state is known
+
+owned:
+  - suit
+  - tie
+
+needed:
+  - id: briefcase
+    must:
+      - Looks like a regular, full-size briefcase or attaché (not a mini or novelty case).
+      - Holds 12 oz cans or 12 oz longneck beer bottles plus 1-2 plastic bags of ice.
+      - Closes and carries normally while loaded.
+    prefer:
+      - Hard-sided attaché (keeps its shape, wipes clean if ice melts).
+      - Black or dark brown, leather or leather-look, brass or silver hardware.
+      - Smallest case that still reads as a normal briefcase.
+    avoid:
+      - Mini, toy or novelty briefcases.
+      - Oversized rolling cases, pilot cases or laptop backpacks.
+    size:
+      unit: in
+      exterior_target:        # a standard attaché
+        length: [17, 18.5]
+        height: [12, 13.5]
+        depth: [3.5, 5]
+      interior_min:
+        length: 10            # longneck lying flat, plus margin
+        depth: 3.0            # bottle or can diameter plus margin
+    payload:
+      can_12oz: {height: 4.83, diameter: 2.6}
+      longneck_12oz: {height: 9.0, diameter: 2.5}   # approximate; confirm in S3
+      ice_bags: {count: [1, 2], note: gallon zip bags laid beside the drinks}
+
+  - id: axe
+    must:
+      - Fake (foam, rubber or plastic); safe to carry at a party.
+      - Reads as a real axe from a few feet away.
+    prefer:
+      - Full-size look, roughly 20-36 in long.
+      - Realistic wood-grain handle and metal-look head.
+
+  - id: blood
+    must:
+      - Fake blood suitable for a costume.
+    prefer:
+      - Washable and fabric-safe, because the suit is the user's own.
+      - Squeeze or splatter bottle for easy application.
+    note: Axe and blood are sometimes sold together as a kit; kits count toward both.
