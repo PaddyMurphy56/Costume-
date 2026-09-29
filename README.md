@@ -1,8 +1,7 @@
 # Costume-
 
-A multi-session build of a deep resale-shopping system. Its first job is sourcing items for a
-Patrick Bateman costume (briefcase, fake axe, fake blood, add-ons) into a rated gallery, $75 budget.
+A multi-session build of a deep resale-shopping system. Its first job is finding items for a Patrick Bateman costume.
 
-- `docs/ROADMAP.md`: the build order, session plan, contracts and risks.
-- `CLAUDE.md`: the project map and rules for every session.
-- `docs/sessions/01-site-atlas.md`: the prompt that starts Session 1.
+- `docs/REQUIREMENTS.md`: what the system must do.
+- `docs/ROADMAP.md`: the build sessions, with their inputs and deliverables.
+- `docs/sessions/01-site-list.md`: the prompt that starts Session 1.
