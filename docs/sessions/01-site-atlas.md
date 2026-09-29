@@ -24,7 +24,7 @@ This list feeds two later systems:
 
 The first real use is the costume brief in `config/brief.yaml`, but the Atlas should serve general resale shopping too.
 
-**This session builds the Atlas; it doesn't operate it.** Once all five systems are built, the whole system runs end to end **20–30 times** and learns from the user's ratings. That means the Atlas must be refreshable, and it must be able to record per-site yield (which sites produce liked finds) so later runs can favor the sites that deliver. See ROADMAP §6.
+**This session builds the Atlas; it doesn't operate it.** Once all five systems are built, the whole system runs end to end **20–30 times**. Each run adds items to a gallery where the user rates every item, and the system learns from those ratings. That means the Atlas must be refreshable, and it must be able to record per-site yield (which sites produce well-rated items) so later runs can favor the sites that deliver. See ROADMAP §6.
 
 ## Start with Method Discovery
 Before you build anything, run a workflow that works out **the best way to build the Site Atlas**. ROADMAP §5 gives the minimum bar:

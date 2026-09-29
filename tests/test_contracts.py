@@ -34,6 +34,8 @@ def test_brief_budget_and_items():
     assert brief["dates"]["buy_by"] == "2026-10-15"
     assert brief["runs"]["planned"] == [20, 30]
     assert "tough" in brief["extras"]["want"]
+    assert brief["output"]["mode"] == "gallery"
+    assert brief["output"]["assemble_costume"] is False
 
 
 def test_example_registry_matches_site_schema():

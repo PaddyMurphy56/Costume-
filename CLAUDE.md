@@ -6,7 +6,14 @@ Read `docs/ROADMAP.md` before doing anything. It holds the build order, the sess
 
 ## Session model
 - **There are two phases.** First, five build sessions, one per system. Then the finished system runs end to end **20–30 times** before the buy-by date (ROADMAP §6).
-- **Each run makes the system smarter.** The user rates listings and hashtags. Those ratings drive a hashtag popularity board, a taste/vibe profile, site yield, and advanced ranking and tag generation.
+- **Each run adds items to a gallery; the system never assembles a costume.** The user puts the costume together from the gallery later.
+- **Each run makes the system smarter.** The user gives feedback in four ways:
+  - rates **every item** (1–5 stars);
+  - changes rankings easily (reorder, pin, bury, factor sliders);
+  - optionally boosts hashtags with ★/★★/★★★ or mutes them;
+  - adds notes to items and hashtags.
+
+  Hashtags never need individual ratings: their scores are learned from the ratings of the items they found. All of this feedback drives the hashtag popularity board, the taste/vibe profile, site yield, and advanced ranking and tag generation. The Tagger and Hunter read the notes on every run.
 - Build every system to be run repeatedly: run logs, stable IDs, idempotent steps, and a known cost per run.
 - Each system is built in its own new session:
   - S1 Site Atlas

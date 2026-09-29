@@ -16,6 +16,7 @@ Its first real job is the costume brief in `config/brief.yaml`:
 | Already owned | Suit, tie |
 | Need | Briefcase, fake axe, fake blood |
 | Also wanted | Recommendations for add-ons that would make the costume look tough |
+| Output | A growing gallery of rated items. **The user puts the costume together later; the system never assembles a kit.** |
 | Budget | **$75 total, shipping and tax included** |
 | Briefcase | Must look like a regular full-size briefcase or attaché, not a mini. Must hold 12 oz cans or longneck bottles plus 1–2 bags of ice. |
 | Buy by | **2026-10-15** (the event is 2026-10-31) |
@@ -23,16 +24,16 @@ Its first real job is the costume brief in `config/brief.yaml`:
 ### Two phases
 
 1. **Build (S1–S5).** Each system gets one full session whose only job is to build it.
-2. **Run (20–30 full runs).** The finished system runs end to end 20–30 times before the buy-by date. Each run finds listings, the user rates them, and the system learns from those ratings. §6 describes the loop.
+2. **Run (20–30 full runs).** The finished system runs end to end 20–30 times before the buy-by date. Each run adds new items to the gallery, the user rates them, and the system learns from those ratings. §6 describes the loop.
 
 ## 2. The systems
 
 | ID | Session | System | Job | What it must learn across runs |
 |---|---|---|---|---|
-| A | S1 | **Site Atlas** | Find and profile a massive, deep list of shopping sites. Used, resale, vintage, auction and estate sites come first, going far beyond Etsy, Depop and eBay. | Which sites actually produce liked finds (per-site yield). |
-| B | S2 | **Tagger** | Take an item (text and/or photo) and produce the hashtags and keywords that find it and things like it. Includes site-specific variants. | Which hashtags find good listings and match the user's taste. It keeps the winners, drops the duds and keeps exploring new tags. |
-| C | S3 | **Hunter** | Search the Atlas with the Tagger's keywords. Collect, normalize, filter against the brief, dedupe and **rank** the listings. | How to rank for the user's taste and the costume's vibe, beyond price and fit. |
-| D | S4 | **Integration** | Combine A, B and C into one run loop. Build a gallery for rating **listings and hashtags**, a **hashtag popularity board**, the **taste profile**, and the **add-on recommender**. | Everything above. D is where the learning happens. |
+| A | S1 | **Site Atlas** | Find and profile a massive, deep list of shopping sites. Used, resale, vintage, auction and estate sites come first, going far beyond Etsy, Depop and eBay. | Which sites actually produce well-rated items (per-site yield). |
+| B | S2 | **Tagger** | Take an item (text and/or photo) and produce a generous set of hashtags and keywords that find it and things like it. Includes site-specific variants. | Which hashtags find well-rated items. It learns this from item ratings plus the user's hashtag stars and notes. It keeps the winners, drops the duds and keeps exploring new tags. |
+| C | S3 | **Hunter** | Search the Atlas with the Tagger's keywords. Collect, normalize, filter against the brief, dedupe and **rank** the items. | How to rank for the user's taste and the costume's vibe, beyond price and fit. It learns from ratings, the user's manual ranking changes and notes. |
+| D | S4 | **Integration** | Combine A, B and C into one run loop. Build the **gallery** that collects items for the user to rate, re-rank and annotate. Also build **hashtag stars and notes**, a **hashtag popularity board**, the **taste profile**, and the **add-on recommender**. | Everything above. D is where the learning happens. |
 | E | S5 | **Audit & Hardening** | Double-check the whole system, look for holes, fix the worst ones and improve the rest. It also proves the learning loop actually improves results. | Nothing; E verifies the rest. |
 
 The Tagger is the foundation: its tags curate and guide the Hunter. Ranking and hashtag creation are the two places that have to be most advanced, because they are what lets the system get better with each run.
@@ -45,7 +46,7 @@ flowchart LR
   A["S1 Site Atlas"]
   B["S2 Tagger"]
   C["S3 Hunter + ranking"]
-  G["Gallery: rate listings + hashtags"]
+  G["Gallery: rate + re-rank items, star + note hashtags"]
   L["Learning: hashtag stats, taste profile, site yield"]
   R["Add-on recommender"]
   E["S5 Audit + Hardening"]
@@ -56,9 +57,11 @@ flowchart LR
   A -->|"site tag conventions + labeled listing sample"| B
   A -->|"registry/sites.yaml"| C
   B -->|"TagSet keywords"| C
-  C -->|"ranked listings"| G
+  C -->|"ranked items"| G
   R -->|"add-on ideas"| B
-  G -->|"ratings"| L
+  G -->|"ratings, rank changes, stars, notes"| L
+  G -->|"notes"| B
+  G -->|"notes"| C
   L -->|"tag weights"| B
   L -->|"taste profile"| C
   L -->|"site yield"| C
@@ -116,32 +119,64 @@ Every system is built to be **run 20–30 times**. Design for repeat runs from t
 
 ## 6. The run loop (20–30 runs)
 
-Each run goes end to end and leaves the system smarter than it found it.
+Each run goes end to end, adds new items to the gallery, and leaves the system smarter than it found it. **The system never assembles a costume.** It keeps a growing, rated collection, and the user puts the costume together from it later.
 
-1. **Ideas.** The core items from the brief, plus add-on ideas from the recommender, plus liked listings to find more of.
-2. **Tags.** The Tagger generates hashtags and keywords from text and photos. It is weighted by what earlier ratings liked, and it keeps a share of new tags in play to explore.
-3. **Hunt.** The Hunter searches the Atlas, prioritizing sites with proven yield, then filters by the brief and landed price.
-4. **Rank.** Results are ordered by a blend of fit to the brief, landed price, taste and vibe match, deep-cut value and freshness.
-5. **Rate.** In the gallery, the user rates listings (stars) and hashtags (up or down) in a tap or two.
-6. **Learn.** Ratings update four things:
-   - **Hashtag stats.** For every tag: how often it was used, listings found, relevant finds, average rating of its listings, like rate, and trend across runs.
-   - **Taste profile.** A learned model of the costume's vibe from what was liked and disliked, covering images as well as text. It includes a short plain-English "vibe summary" that is refreshed every run.
-   - **Site yield.** Liked finds per site.
+1. **Ideas.** The core items from the brief, plus add-on ideas from the recommender, plus items the user rated highly (to find more like them).
+2. **Tags.** The Tagger generates a **generous set of hashtags and keywords** per item from text and photos. They are weighted by what has worked so far, the user's hashtag stars and the user's notes, and a share of new tags is always kept in play to explore.
+3. **Hunt.** The Hunter searches the Atlas, favouring sites with proven yield, filters by the brief, and reads the user's notes.
+4. **Rank.** The Hunter ranks **every item** by a blend of:
+   - fit to the brief
+   - landed price
+   - taste and vibe match
+   - deep-cut value
+   - freshness
+   - the user's notes and manual ranking changes
+5. **Add to gallery.** New items join the collection. Each item shows its picture, a link, its landed price, its rank, and the hashtags that found it.
+6. **User feedback.** Every piece of feedback is quick to give and easy to change later:
+
+   | What | How | Required? |
+   |---|---|---|
+   | **Rate every item** | 1–5 stars, changeable any time | Yes. Item ratings are the main learning signal. |
+   | **Change the ranking** | Drag to reorder, pin to top, bury, or adjust the ranking-factor sliders (price vs taste vs fit vs rarity) | Optional, and it takes effect immediately |
+   | **Star a hashtag** | ★, ★★ or ★★★ to boost it harder, or mute it | Optional. Hashtags never need to be rated one by one. |
+   | **Add a note to an item or hashtag** | Free text, e.g. "more like this but darker leather" or "skip aluminum cases" | Optional. The Tagger and Hunter read notes on every run. |
+
+7. **Learn.** The feedback updates:
+   - **Hashtag stats.** Each hashtag's score is learned from the ratings of the items it found. The user's stars and mutes adjust it on top. Tracked per tag: uses, items found, average rating of those items, and trend across runs.
+   - **Taste profile.** A learned model of the costume's vibe from well-rated and poorly rated items, covering images as well as text, plus the user's notes. It includes a short plain-English "vibe summary" that is refreshed every run.
+   - **Ranking model.** Learns from ratings and from the user's manual reordering, pins and slider settings.
+   - **Site yield.** Well-rated items per site.
    - **Recommender state.** Which add-on ideas land.
-7. **Report.** A run log with metrics, compared against earlier runs.
+8. **Report.** A run log with metrics, compared against earlier runs.
 
-**The hashtag popularity board** shows which hashtags are popular: by the user's ratings, by how many good listings they find, and by trend (rising or falling). It is what makes the search better each run, and the user can see it and steer it.
+**The hashtag popularity board** shows which hashtags are popular:
+- by the ratings of the items they found;
+- by the user's stars;
+- by how many good items they find;
+- by trend (rising or falling).
 
-**The add-on recommender** suggests items that would make the costume look tough, such as iconic details from the film and accessories that fit the learned vibe. Each suggestion shows its cost against the budget left after the core items. It flags anything that would push the total over $75 and never adds it to the kit on its own.
+It is what makes the search better each run, and the user can steer it with stars, mutes and notes.
+
+**The add-on recommender** suggests items that would make the costume look tough, such as iconic details from the film and accessories that fit the learned vibe. It hunts for them and adds them to the gallery as ordinary items with their landed price. The user decides what goes in the costume.
+
+**Budget helper (user-controlled).** The user can mark items as picks. The gallery then shows a running total of their landed prices against the $75. The system never picks for the user.
 
 **Run metrics** should trend upward across runs. S5 checks that they actually do:
-- like rate of the top 10 listings
-- new relevant finds per run
-- tag hit rate
+- average rating of each run's top 10 items
+- new well-rated items per run
+- hashtag hit rate
 - share of finds from deep-cut sites
 - cost per run
 
-**Open for Method Discovery:** how the taste profile and ranking actually learn. The options include weighted tag priors, image embeddings of liked listings, learning to rank from pairwise preferences, bandits for choosing tags and sites, and using Claude as a judge of the vibe summary. These are hypotheses for S2, S3 and S4 to test, not decisions.
+**Open for Method Discovery:** how the taste profile, hashtag scores and ranking actually learn. The options include:
+- weighted tag priors;
+- image embeddings of well-rated items;
+- learning to rank from ratings and manual reorders;
+- bandits for choosing tags and sites;
+- turning notes into constraints with Claude;
+- using Claude as a judge of the vibe summary.
+
+These are hypotheses for S2, S3 and S4 to test, not decisions.
 
 ## 7. Agents
 
@@ -174,8 +209,11 @@ Sessions can and should create their own agents (in `.claude/agents/`) whenever 
 
 ### S2: Tagger (Oct 1)
 
-- **Job:** take an item as text, a photo or both, and produce ranked hashtags and keywords that find it and similar items on resale sites. This includes site-specific forms such as marketplace tags, hashtags and item attributes. It has to use the **picture**, not just the words.
-- **It must be advanced and it must learn.** Tags get stable IDs so ratings can roll up per tag. Generation takes feedback in: it favors tags with strong stats, retires dead ones, mines new tags from liked listings, and keeps an exploration share.
+- **Job:** take an item as text, a photo or both, and produce a **generous set** of ranked hashtags and keywords that find it and similar items on resale sites. This includes site-specific forms such as marketplace tags, hashtags and item attributes. It has to use the **picture**, not just the words.
+- **It must be advanced and it must learn without the user rating every hashtag.**
+  - Tags get stable IDs, so item ratings can roll up to the hashtags that found those items.
+  - Generation takes three inputs: learned tag scores, the user's ★/★★/★★★ boosts and mutes, and notes on hashtags and items.
+  - It favours tags with strong stats, retires dead ones, mines new tags from well-rated items, and keeps an exploration share.
 - **Hypotheses to test** (not decisions):
   - a multimodal LLM reading the photo directly
   - CLIP-family zero-shot tagging (e.g. FashionCLIP, SigLIP) against a tag vocabulary
@@ -198,11 +236,16 @@ Sessions can and should create their own agents (in `.claude/agents/`) whenever 
   - filter against the brief (briefcase size, budget, item type);
   - dedupe across sites;
   - rank the results.
-- **Ranking must be advanced.** It blends fit, landed price, taste and vibe match, deep-cut value and freshness. It takes a taste profile and site yield as inputs, so it improves as ratings come in, and it starts sensibly before any ratings exist.
+- **Ranking must be advanced, and easy for the user to change.**
+  - **Factors.** It ranks every item by blending fit, landed price, taste and vibe match, deep-cut value and freshness.
+  - **Inputs.** It takes the taste profile, site yield, the user's notes and the user's manual ranking changes (reorders, pins, factor sliders).
+  - **Learning.** It improves as ratings come in, and it starts sensibly before any ratings exist.
+  - **Explainable.** Every item's score shows its parts, so the user can see why it ranked where it did and adjust it.
 - **Questions for Method Discovery:**
   - What's the best way to query hundreds of sites that each have a different access method?
   - How do we pull dimensions and shipping out of messy listings?
-  - Which ranking approach learns fastest from a few dozen ratings?
+  - Which ranking approach learns fastest from a few dozen ratings and manual reorders?
+  - How should free-text notes become ranking and search signals?
   - How should blocked or flaky sites be handled?
 - **Outputs:**
   - The `SearchQuery`, `Listing` and `TasteProfile` contracts.
@@ -213,15 +256,19 @@ Sessions can and should create their own agents (in `.claude/agents/`) whenever 
 ### S4: Integration (Oct 3)
 
 - **Job:** combine everything into the run loop from §6. It builds:
-  - **the gallery**, with a picture, link and landed price for every find, plus the **rating system** for listings (stars) and hashtags (up or down);
-  - **the hashtag popularity board**;
-  - **the learning step** that updates tag stats, the taste profile and site yield after every run;
-  - **the add-on recommender**;
-  - **one command for a full run**, repeatable 20–30 times;
-  - **a "decide" mode** that picks the final kit, with order links, on the buy-by date.
+  - **The gallery.** A growing collection with a picture, link, landed price, rank and hashtags for every item. It is not a finished costume: the user assembles that later.
+  - **Item feedback.** A fast 1–5 star rating on every item, changeable any time, plus notes on each item.
+  - **Easy ranking changes.** Drag to reorder, pin, bury, and ranking-factor sliders that re-sort the gallery immediately.
+  - **Hashtag controls.** ★/★★/★★★ boosts, mute, and notes on any hashtag. Hashtags never have to be rated one by one.
+  - **The hashtag popularity board.**
+  - **The learning step.** After every run it updates hashtag scores, the taste profile, the ranking model and site yield from ratings, rank changes, stars and notes.
+  - **The add-on recommender,** which adds its finds to the gallery as ordinary items.
+  - **The budget helper.** Picks marked by the user, with a running total against $75.
+  - **One command for a full run,** repeatable 20–30 times.
 - **Questions for Method Discovery:**
   - How should images get into the gallery? (§11 explains why this is hard.)
-  - Where should ratings and stats live so both the gallery and the pipeline can read them?
+  - Where should ratings, notes and stats live so both the gallery and the pipeline can read and write them?
+  - How can rating every item stay fast across 20–30 runs?
   - How can the system learn well from a small number of ratings?
 
 ### S5: Audit & Hardening (Oct 4)
@@ -246,23 +293,23 @@ Sessions can and should create their own agents (in `.claude/agents/`) whenever 
 | Oct 2 | S3: Hunter |
 | Oct 3 | S4: Integration |
 | Oct 4 | S5: Audit & Hardening |
-| Oct 5–14 | **20–30 full runs** (2–3 a day), rating each run in the gallery |
+| Oct 5–14 | **20–30 full runs** (2–3 a day), rating each run's new items in the gallery |
 | **Oct 15** | **Buy** |
 | Oct 31 | Event |
 
 Each build session is budgeted at one day so the runs get ten days. If a build session slips, the number of runs drops; about 15 runs is the useful minimum.
 
-**Plan B:** if the pipeline isn't producing good finds by Oct 12, buy the best candidates found so far so shipping still arrives in time.
+**Plan B:** if the pipeline isn't producing good finds by Oct 12, the user picks from the best-rated items in the gallery so far, so shipping still arrives in time.
 
 ## 10. Contracts
 
 | Contract | Where | Owner | Status |
 |---|---|---|---|
-| Brief | `config/brief.yaml`, `schemas/brief.schema.json` | S0 | v3 |
+| Brief | `config/brief.yaml`, `schemas/brief.schema.json` | S0 | v4 |
 | SiteRecord | `schemas/site.schema.json` | S1 | v0 draft |
 | ItemInput, TagSet, TagStats | to be written | S2 | sketch |
 | SearchQuery, Listing, TasteProfile | to be written | S3 | sketch |
-| Rating, RunLog, Recommendation | to be written | S4 | sketch |
+| ItemRating, TagControl, Note, RankOverride, RunLog, Recommendation | to be written | S4 | sketch |
 
 Sketches (starting points only; each owner defines the real thing):
 
@@ -273,13 +320,16 @@ Sketches (starting points only; each owner defines the real thing):
   - `evidence`: text, image or both
   - `kind`: object, attribute, style, era, brand, material, color or vibe
   - `origin`: generated, mined, explore or user
-- **TagStats:** `tag_id`, `uses`, `listings_found`, `relevant_found`, `avg_rating`, `like_rate`, `user_votes`, `trend`, `last_run`.
+- **TagStats:** `tag_id`, `uses`, `items_found`, `avg_item_rating`, `learned_score`, `user_boost` (0–3 stars, or muted), `trend`, `last_run`.
 - **SearchQuery:** `site_id`, `query`, `filters`, `tag_ids[]`, `run_id`, `issued_at`.
 - **Listing:** `id`, `site_id`, `url`, `title`, `images[]`, `price`, `shipping`, `landed_price`, `condition`, `dimensions`, `seller_tags[]`, `tag_ids[]` (which of our tags found it), `rank_score` with its parts, `run_id`, `found_at`.
-- **TasteProfile:** `version`, `vibe_summary`, `tag_weights`, `image_centroids` (liked and disliked), `site_weights`, `updated_after_run`.
-- **Rating:** `target` (a listing or a tag), `target_id`, `stars` (1–5) or `vote` (+1/-1), `note`, `run_id`, `rated_at`.
-- **RunLog:** `run_id`, `started_at`, `inputs`, `queries`, `listings`, `metrics`, `cost`, `errors`.
-- **Recommendation:** `id`, `item`, `why`, `est_cost`, `fits_budget`, `status` (suggested, liked, dismissed).
+- **TasteProfile:** `version`, `vibe_summary`, `tag_weights`, `image_centroids` (well-rated and poorly rated), `site_weights`, `rank_factor_weights`, `updated_after_run`.
+- **ItemRating:** `listing_id`, `stars` (1–5), `rated_at`, `changed_at`. Every item gets one.
+- **TagControl:** `tag_id`, `boost` (1, 2 or 3 stars) or `muted`, `set_at`. Optional; most tags never get one.
+- **Note:** `target` (an item or a hashtag), `target_id`, `text`, `created_at`. Read by the Tagger and Hunter on every run.
+- **RankOverride:** `listing_id`, `action` (move, pin or bury), `position`, plus the gallery's `factor_weights` (the slider values).
+- **RunLog:** `run_id`, `started_at`, `inputs`, `queries`, `listings_added`, `metrics`, `cost`, `errors`.
+- **Recommendation:** `id`, `idea`, `why`, `listing_ids[]` (the gallery items found for it), `status` (suggested, liked, dismissed).
 
 Validate any file against a schema with `uv run costume-validate <file> <schema> [--def Name] [--each]`.
 
@@ -297,18 +347,18 @@ Validate any file against a schema with `uv run costume-validate <file> <schema>
 |---|---|---|
 | Bot walls and login walls (e.g. DataDome, logged-in-only marketplaces, app-only sellers) | Big sites can't be searched directly | Record them as blockers and never bypass them. Fall back to search-engine indexes, or skip. |
 | Blocked hosts and images | No photos in the Tagger or the gallery | Ask the user to allowlist image hosts; use Firecrawl screenshots as the fallback. |
-| Cold start (no ratings in the first runs) | Early ranking is generic | Seed from the brief and the vibe of the film. Let the user rate hashtags directly so learning starts on run 1. |
+| Cold start (no ratings in the first runs) | Early ranking is generic | Seed from the brief and the vibe of the film. Hashtag stars and notes let the user steer from run 1. |
 | Feedback loop narrows too fast | The system stops finding deep cuts | Keep a fixed exploration share of new tags and sites on every run. S5 tests for this. |
-| Rating fatigue over 20–30 runs | Too few ratings to learn from | One-tap ratings, a small top-N per run, and hashtag votes in bulk. |
+| Rating every item gets tiring over 20–30 runs | Ratings get skipped or rushed | Show only each run's new items, make rating one tap with keyboard shortcuts, and never require hashtag ratings. S4 designs for this. |
+| Notes are vague or contradict each other | The shopper misreads the user's intent | Show how each note was interpreted (e.g. "skip aluminum" becomes a filter) so the user can correct it. |
 | Cost of 20–30 runs, plus Firecrawl usage limits | Runs stall or get expensive | Set a per-run tool-call budget in S4. S5 measures real cost. Consider a Firecrawl API key. |
 | Over-building eats the calendar | Fewer than about 15 runs | One-day build sessions that stop at their definition of done. Plan B from Oct 12. |
 | Resale shipping on bulky cases ($10–20+) | Blows the $75 cap | Rank by landed price, never by sticker price. |
-| Stale or sold-out listings | Wasted picks | Re-check that a listing is still live before recommending it. |
+| Stale or sold-out listings | Dead items in the gallery | Re-check listings on later runs and mark sold-out items instead of deleting them, so their ratings still count. |
 
 ## 13. Open questions for the user
 
 1. What state or ZIP code will you order to? This sets tax and shipping estimates, and local-pickup options.
 2. Should the image hosts be added to the environment's allowed domains? That makes photos much more reliable.
 3. Is a Firecrawl API key available for higher limits?
-4. Should add-on recommendations have to fit inside the $75, or be shown as extras beyond it?
-5. Should the system stay costume-specific, or be general enough for future shopping? This decides how general the Atlas and the Tagger should be.
+4. Should the system stay costume-specific, or be general enough for future shopping? This decides how general the Atlas and the Tagger should be.

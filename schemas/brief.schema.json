@@ -43,6 +43,15 @@
         "learn_from": {"type": "array", "items": {"type": "string"}}
       }
     },
+    "output": {
+      "type": "object",
+      "required": ["mode", "assemble_costume"],
+      "properties": {
+        "mode": {"enum": ["gallery"]},
+        "assemble_costume": {"type": "boolean"},
+        "budget_helper": {"type": "string"}
+      }
+    },
     "extras": {
       "type": "object",
       "required": ["want", "budget_rule"],
