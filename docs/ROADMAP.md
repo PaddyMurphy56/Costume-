@@ -17,7 +17,8 @@ Its first real job is the costume brief in `config/brief.yaml`:
 | Need | Briefcase, fake axe, fake blood |
 | Also wanted | Recommendations for add-ons that would make the costume look tough |
 | Output | A growing gallery of rated items. **The user puts the costume together later; the system never assembles a kit.** |
-| Budget | **$75 total, shipping and tax included** |
+| Budget | **$75 total, shipping and tax included** (Houston tax, 8.25%) |
+| Location | Houston, TX (Spring Branch / Memorial). **Local pickup counts**, which makes Houston-area resale, estate sales and classifieds first-class sources. |
 | Briefcase | Must look like a regular full-size briefcase or attaché, not a mini. Must hold 12 oz cans or longneck bottles plus 1–2 bags of ice. |
 | Buy by | **2026-10-15** (the event is 2026-10-31) |
 
@@ -107,7 +108,18 @@ The order the user proposed is right, with two additions to S1:
 Every session, S1 through S5, is a full session of its own whose job is to build its system. Each one **opens with a workflow that works out the best way to build its part before building it.** Each session designs that workflow itself. The minimum bar:
 
 - **Frame.** Inputs, outputs, constraints, definition of done and a timebox.
-- **Sweep.** Look at tools, services, APIs, MCP servers and connectors, models and datasets, and at prior art: how other people have solved this. Check whether each option is actually reachable from this environment.
+- **Sweep for the most efficient way to do everything.** Research the options for every step before choosing any, and pick for efficiency: quality per unit of time, cost and tool calls, and reliability across 20–30 runs. That covers:
+  - tools, Claude Code plugins, skills, MCP servers and connectors;
+  - APIs, CLIs, libraries, models and datasets;
+  - prior art (how other people have solved this).
+
+  **Nothing is a default. That includes the web scraper and search tooling.** A tool that happens to be connected today (for example the Firecrawl connector, or the built-in WebSearch/WebFetch) is one candidate among many, not the answer. Compare it against:
+  - official site APIs;
+  - other scraping and search services and MCP servers;
+  - a headless browser once hosts are allowlisted;
+  - anything else the sweep turns up.
+
+  Use the session's discovery tools for MCP servers, plugins, skills and connectors. Check whether each option is actually reachable from this environment (`uv run costume-netcheck` helps), and say exactly what the user must add, such as an API key or an allowed domain.
 - **Ask and suggest.** Bring the user in before any design is locked:
   - **Ask 5–10 questions** about how this system should work. Make them specific and informed by the sweep, each with a sensible default, so the user can answer fast or accept the defaults.
   - **Suggest 1–5 things to implement** that would make the system better. Each gets a one-line reason and a rough cost in time.
@@ -208,7 +220,7 @@ Sessions can and should create their own agents (in `.claude/agents/`) whenever 
 ### S1: Site Atlas (Sep 30)
 
 - **Job:** build a massive, deep list of places to shop. Used, resale, vintage, auction and estate sites come first. Go well past the obvious (Etsy, Depop, eBay) into niche, regional, app-first, auction, estate-sale, liquidation, international-proxy and specialty sites.
-- **Starter segments** (a floor, not a limit): general marketplaces, fashion resale, vintage and antique, auctions and estate sales, online thrift, liquidation and returns, local classifieds, international and proxy buying, costume, prop and Halloween, luggage and office, deal aggregators.
+- **Starter segments** (a floor, not a limit): general marketplaces, fashion resale, vintage and antique, auctions and estate sales, online thrift, liquidation and returns, local classifieds, international and proxy buying, costume, prop and Halloween, luggage and office, deal aggregators, and **Houston-local sources** (estate sales, thrift and resale shops, classifieds and pickup marketplaces near Spring Branch and Memorial).
 - **Questions for Method Discovery:**
   - How do people find obscure resale sites?
   - Which directories, lists and communities catalogue marketplaces?
@@ -270,7 +282,7 @@ Sessions can and should create their own agents (in `.claude/agents/`) whenever 
   - **Learning.** It improves as ratings come in, and it starts sensibly before any ratings exist.
   - **Explainable.** Every item's score shows its parts, so the user can see why it ranked where it did and adjust it.
 - **Questions for Method Discovery:**
-  - What's the best way to query hundreds of sites that each have a different access method?
+  - Which search and scraping stack is most efficient for querying hundreds of sites that each have a different access method? Research it; don't assume the tools you started with.
   - How do we pull dimensions and shipping out of messy listings?
   - Which ranking approach learns fastest from a few dozen 1–10 scores and manual reorders?
   - How should scores and stars be normalized against their distributions (percentiles, z-scores, scarcity weights)?
@@ -339,8 +351,8 @@ Each build session is budgeted at one day so the runs get ten days. If a build s
 
 | Contract | Where | Owner | Status |
 |---|---|---|---|
-| Brief | `config/brief.yaml`, `schemas/brief.schema.json` | S0 | v5 |
-| SiteRecord | `schemas/site.schema.json` | S1 | v0 draft |
+| Brief | `config/brief.yaml`, `schemas/brief.schema.json` | S0 | v6 |
+| SiteRecord | `schemas/site.schema.json` | S1 | v0.2 draft (tool-neutral access methods) |
 | ItemInput, TagSet, TagStats, HashtagPool | to be written | S2 | sketch |
 | SearchQuery, Listing, TasteProfile | to be written | S3 | sketch |
 | ItemScore, ScoreDistribution, TagControl, StarDistribution, Note, RankOverride, RunLog, Recommendation | to be written | S4 | sketch |
@@ -373,9 +385,10 @@ Validate any file against a schema with `uv run costume-validate <file> <schema>
 ## 11. Environment facts (verified 2026-09-29)
 
 - **Retailer hosts are blocked.** The container's egress proxy returns 403 for retailer sites and their image CDNs (tested: amazon.com, `m.media-amazon.com`, `i.ebayimg.com`, `i5.walmartimages.com`, `i.etsystatic.com`).
-- **Web access goes through connectors.** Use the **Firecrawl** connector for search and scrape, plus WebSearch/WebFetch. Firecrawl searches also listed Alexandria data providers for eBay, Amazon, Etsy and Target. Whether those providers actually run from here is untested.
+- **Web tooling available today (not defaults):** the Firecrawl connector (search and scrape; its searches also listed Alexandria data providers for eBay, Amazon, Etsy and Target, not yet tested) and the built-in WebSearch/WebFetch. Each session researches and picks the most efficient tooling (§5).
 - **Package registries work.** PyPI and npm are reachable, as is `storage.googleapis.com`.
-- **Artifact pages can't hotlink images.** They block external images, so product photos have to be uploaded to the artifact. The container can only download them if the user adds the image hosts to the environment's allowed domains. The fallback is Firecrawl page screenshots.
+- **Retailer images: approved, not yet live.** The user approved allowing retailer images on 2026-09-29. The hosts are listed in `config/network.yaml` and stay blocked until they're added to the environment's allowed domains. Check with `uv run costume-netcheck retailer-images`.
+- **Artifact pages can't hotlink images.** They block external images, so product photos have to be downloaded and uploaded to the artifact.
 - **Python setup.** Python 3.11 and uv are installed. The SessionStart hook runs `uv sync`.
 
 ## 12. Risks
@@ -383,12 +396,12 @@ Validate any file against a schema with `uv run costume-validate <file> <schema>
 | Risk | Impact | Mitigation |
 |---|---|---|
 | Bot walls and login walls (e.g. DataDome, logged-in-only marketplaces, app-only sellers) | Big sites can't be searched directly | Record them as blockers and never bypass them. Fall back to search-engine indexes, or skip. |
-| Blocked hosts and images | No photos in the Tagger or the gallery | Ask the user to allowlist image hosts; use Firecrawl screenshots as the fallback. |
+| Image hosts still blocked | No photos in the Tagger or the gallery | The user approved the allowlist and it just needs applying (§11). Until then, sessions find a fallback during Method Discovery. |
 | Cold start (no ratings in the first runs) | Early ranking is generic | Seed from the brief and the vibe of the film. Hashtag stars and notes let the user steer from run 1. |
 | Feedback loop narrows too fast | The system stops finding deep cuts | Keep a fixed exploration share of new tags and sites on every run. S5 tests for this. |
 | Scoring every item gets tiring over 20–30 runs | Scores get skipped or rushed, and drift over time | Show only each run's new items. Make scoring a single tap or keypress (1–9, 0 for 10). Keep the distribution chart in view so scores stay consistent. Never require hashtag ratings. S4 designs for this. |
 | Notes are vague or contradict each other | The shopper misreads the user's intent | Show how each note was interpreted (e.g. "skip aluminum" becomes a filter) so the user can correct it. |
-| Cost of 20–30 runs, plus Firecrawl usage limits | Runs stall or get expensive | Set a per-run tool-call budget in S4. S5 measures real cost. Consider a Firecrawl API key. |
+| Cost of 20–30 runs, plus scraping or search usage limits | Runs stall or get expensive | Pick tooling for efficiency in Method Discovery. Set a per-run budget in S4. S5 measures real cost. Sessions ask for any API keys they need. |
 | Over-building eats the calendar | Fewer than about 15 runs | One-day build sessions that stop at their definition of done. Plan B from Oct 12. |
 | Resale shipping on bulky cases ($10–20+) | Blows the $75 cap | Rank by landed price, never by sticker price. |
 | Stale or sold-out listings | Dead items in the gallery | Re-check listings on later runs and mark sold-out items instead of deleting them, so their scores still count. |
@@ -396,7 +409,11 @@ Validate any file against a schema with `uv run costume-validate <file> <schema>
 
 ## 13. Open questions for the user
 
-1. What state or ZIP code will you order to? This sets tax and shipping estimates, and local-pickup options.
-2. Should the image hosts be added to the environment's allowed domains? That makes photos much more reliable.
-3. Is a Firecrawl API key available for higher limits?
-4. Should the system stay costume-specific, or be general enough for future shopping? This decides how general the Atlas and the Tagger should be.
+Answered so far:
+- **Location:** Houston, TX (Spring Branch / Memorial).
+- **Retailer images:** allowed.
+- **Web scraper:** not decided. Each session researches and picks it.
+
+Still open:
+1. Should the system stay costume-specific, or be general enough for future shopping? This decides how general the Atlas and the Tagger should be.
+2. How far are you willing to drive for local pickup? The default is 20 miles; Session 1 will confirm it.

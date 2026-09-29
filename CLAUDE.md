@@ -47,10 +47,13 @@ uv sync                                   # install (the SessionStart hook does 
 uv run pytest                             # tests
 uv run ruff check . && uv run ruff format --check .   # lint and format check
 uv run costume-validate <file> <schema> [--def Name] [--each]   # validate data against a contract
+uv run costume-netcheck [group]           # which hosts in config/network.yaml are reachable
 ```
 
 ## Environment constraints
-- The container's proxy blocks retailer sites and their image CDNs (403). Do web research through the Firecrawl connector or WebSearch/WebFetch, not `curl`.
+- **No default tools.** Every session researches tools, plugins, skills, MCP servers, connectors, APIs and libraries, and picks the **most efficient way** to do each step. That includes the web scraper and search tooling. The Firecrawl connector and WebSearch/WebFetch are available today, but they are candidates, not defaults.
+- The container's proxy blocks retailer sites and their image CDNs (403) unless a host is added to the environment's allowed domains. Retailer images are approved (`config/network.yaml`). Check reachability with `uv run costume-netcheck`.
+- The user is in Houston, TX (Spring Branch / Memorial). Local pickup counts.
 - PyPI and npm are reachable.
 - Artifact pages can't load external images. Product photos have to be uploaded to the artifact.
 

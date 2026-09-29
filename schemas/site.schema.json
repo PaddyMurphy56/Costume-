@@ -29,12 +29,14 @@
       ]
     },
     "AccessMethod": {
+      "description": "Kind of access, independent of the specific tool. ProbeAttempt.tool names the tool that was used.",
       "enum": [
-        "alexandria-provider",
         "official-api",
-        "firecrawl-scrape",
-        "firecrawl-search-site",
-        "websearch-site",
+        "data-provider",
+        "scrape-service",
+        "headless-browser",
+        "direct-http",
+        "search-engine-site",
         "manual-only",
         "none"
       ]
@@ -67,6 +69,7 @@
       "additionalProperties": false,
       "properties": {
         "method": {"$ref": "#/$defs/AccessMethod"},
+        "tool": {"type": "string", "description": "The specific tool or service used, e.g. a connector, API client or library."},
         "result": {"enum": ["ok", "partial", "blocked", "error"]},
         "evidence": {"type": "string", "minLength": 1},
         "probed_at": {"type": "string", "format": "date"}

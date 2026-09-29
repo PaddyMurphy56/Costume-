@@ -1,0 +1,25 @@
+# Hosts the system needs to reach from the container.
+# Check them with: uv run costume-netcheck
+#
+# 2026-09-29: the user approved allowing retailer images. Hosts start out blocked
+# (proxy 403) until they're added to the environment's allowed domains.
+# Sessions add hosts here as their Method Discovery picks tools and sites.
+
+groups:
+  retailer-images:
+    approved_by_user: true
+    purpose: Product photos for the Tagger (vision) and the gallery.
+    hosts:
+      - m.media-amazon.com
+      - i.ebayimg.com
+      - i5.walmartimages.com
+      - i.etsystatic.com
+      - target.scene7.com
+
+  package-registries:
+    approved_by_user: true
+    purpose: Installing Python and Node dependencies.
+    hosts:
+      - pypi.org
+      - files.pythonhosted.org
+      - registry.npmjs.org

@@ -1,6 +1,6 @@
 # Shape example for registry/sites.yaml. Illustrative only: nothing below was
 # probed or verified. Session 1 writes the real registry.
-schema_version: "0.1"
+schema_version: "0.2"
 generated_at: "2026-09-29T00:00:00Z"
 sites:
   - id: ebay

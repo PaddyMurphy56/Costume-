@@ -16,6 +16,7 @@ Build a **massive, deep list of places to shop**, with used, resale, vintage, au
 - costume, prop and Halloween specialists
 - luggage and office specialists
 - deal aggregators
+- **Houston-local sources** near Spring Branch and Memorial (the user is there, and local pickup counts): estate sales, thrift and resale shops, classifieds, pickup marketplaces
 - anything else a determined bargain hunter would use
 
 This list feeds two later systems:
@@ -29,7 +30,7 @@ The first real use is the costume brief in `config/brief.yaml`, but the Atlas sh
 ## Start with Method Discovery
 Before you build anything, run a workflow that works out **the best way to build the Site Atlas**. ROADMAP §5 gives the minimum bar:
 1. frame
-2. sweep tools and prior art
+2. sweep tools, plugins, skills, MCP servers, connectors, APIs and prior art for **the most efficient way to do each step**, including which web scraper and search tooling to use (nothing is a default)
 3. **ask the user 5–10 questions** about how the Site Atlas should work, and **suggest 1–5 things to implement**; wait for the answers before locking the design
 4. build at least two genuinely different candidate methods
 5. bake-off with the scoring rule written first
@@ -42,6 +43,7 @@ Record it in `research/01-site-atlas/method-discovery.md`, using `docs/templates
 - How do you tell a live site from a dead, merged or rebranded one?
 - How can you test, at scale and within each site's terms, whether a site can be searched from this environment?
 - How should the Atlas keep growing and track per-site yield across 20–30 runs?
+- Which web scraper and search tooling is most efficient for finding, profiling and probing sites at this scale? Compare real options; don't default to whatever is connected.
 
 You can and should create agents in `.claude/agents/` whenever that would make the system better.
 
@@ -65,7 +67,7 @@ You can and should create agents in `.claude/agents/` whenever that would make t
 - The deliverables above are committed and pushed on a branch with a draft PR.
 
 ## Constraints
-- Retailer hosts are blocked from the container. Research through the Firecrawl connector and WebSearch/WebFetch, not `curl`.
+- Retailer hosts are blocked from the container unless they're allowlisted. Retailer images are approved but may not be live yet: check with `uv run costume-netcheck`. Choose your web tooling in Method Discovery; the Firecrawl connector and WebSearch/WebFetch are available today, but they are not defaults.
 - Never bypass logins, captchas or bot protection, and never scrape against a site's terms. Record them as blockers instead.
 - Cite sources. Mark anything unconfirmed as unverified.
 - Timebox: this session should finish on 2026-09-30. Each build session gets about a day, so there's time for 20–30 runs before the costume's buy-by date of 2026-10-15.

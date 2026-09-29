@@ -37,6 +37,8 @@ def test_brief_budget_and_items():
     assert brief["output"]["mode"] == "gallery"
     assert brief["output"]["assemble_costume"] is False
     assert any("1-10" in signal for signal in brief["runs"]["learn_from"])
+    assert (brief["location"]["city"], brief["location"]["state"]) == ("Houston", "TX")
+    assert brief["budget"]["est_tax_rate"] == 0.0825
 
 
 def test_example_registry_matches_site_schema():

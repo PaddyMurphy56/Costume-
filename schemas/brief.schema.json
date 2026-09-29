@@ -10,6 +10,17 @@
     "character": {"type": "string", "minLength": 1},
     "look": {"type": "string"},
     "use": {"type": "string"},
+    "location": {
+      "type": "object",
+      "required": ["city", "state"],
+      "properties": {
+        "city": {"type": "string"},
+        "state": {"type": "string", "pattern": "^[A-Z]{2}$"},
+        "area": {"type": "string"},
+        "local_pickup": {"type": "boolean"},
+        "pickup_radius_miles": {"type": "number", "minimum": 0}
+      }
+    },
     "dates": {
       "type": "object",
       "required": ["buy_by", "event"],

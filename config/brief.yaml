@@ -2,7 +2,7 @@
 # Every system (Site Atlas, Tagger, Hunter) reads its constraints from here.
 # Validated by schemas/brief.schema.json.
 
-brief_version: 5
+brief_version: 6
 character: Patrick Bateman (American Psycho, 2000)
 look: 1980s Wall Street executive
 use: one-time costume
@@ -20,6 +20,13 @@ output:
   assemble_costume: false  # the user puts the costume together; never build a kit
   budget_helper: User marks picks; the gallery shows their landed total against total_max.
 
+location:
+  city: Houston
+  state: TX
+  area: Spring Branch / Memorial
+  local_pickup: true           # local finds skip shipping; counts toward landed price as $0 shipping
+  pickup_radius_miles: 20      # default; confirm in Session 1's questions
+
 dates:
   created: 2026-09-29
   buy_by: 2026-10-15   # last day to order so slow resale shipping still lands
@@ -30,7 +37,7 @@ budget:
   total_max: 75
   includes_shipping: true
   includes_tax: true
-  est_tax_rate: 0.08     # placeholder until the buyer's state is known
+  est_tax_rate: 0.0825   # Houston combined sales tax (6.25% Texas + 2% local)
 
 owned:
   - suit

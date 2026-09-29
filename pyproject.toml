@@ -11,6 +11,7 @@ dependencies = [
 
 [project.scripts]
 costume-validate = "costume.validate:main"
+costume-netcheck = "costume.netcheck:main"
 
 [dependency-groups]
 dev = [
