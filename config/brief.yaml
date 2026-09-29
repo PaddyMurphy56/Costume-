@@ -2,7 +2,7 @@
 # Every system (Site Atlas, Tagger, Hunter) reads its constraints from here.
 # Validated by schemas/brief.schema.json.
 
-brief_version: 4
+brief_version: 5
 character: Patrick Bateman (American Psycho, 2000)
 look: 1980s Wall Street executive
 use: one-time costume
@@ -10,13 +10,13 @@ use: one-time costume
 runs:
   planned: [20, 30]      # full end-to-end runs after the build sessions
   learn_from:
-    - item ratings (1-5 stars; every item gets one)
+    - item scores (1-10; every item gets one; read against the score distribution)
     - manual ranking changes (reorder, pin, bury, factor sliders)
-    - hashtag boosts (1-3 stars) and mutes (optional)
+    - hashtag boosts (1-3 stars, weighted by scarcity) and mutes (optional)
     - notes on items and hashtags
 
 output:
-  mode: gallery          # a growing collection of rated items
+  mode: gallery          # a growing collection of scored items
   assemble_costume: false  # the user puts the costume together; never build a kit
   budget_helper: User marks picks; the gallery shows their landed total against total_max.
 

@@ -36,6 +36,7 @@ def test_brief_budget_and_items():
     assert "tough" in brief["extras"]["want"]
     assert brief["output"]["mode"] == "gallery"
     assert brief["output"]["assemble_costume"] is False
+    assert any("1-10" in signal for signal in brief["runs"]["learn_from"])
 
 
 def test_example_registry_matches_site_schema():
