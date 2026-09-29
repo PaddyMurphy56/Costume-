@@ -32,6 +32,8 @@ def test_brief_budget_and_items():
     assert brief["budget"]["includes_shipping"] and brief["budget"]["includes_tax"]
     assert {item["id"] for item in brief["needed"]} == {"briefcase", "axe", "blood"}
     assert brief["dates"]["buy_by"] == "2026-10-15"
+    assert brief["runs"]["planned"] == [20, 30]
+    assert "tough" in brief["extras"]["want"]
 
 
 def test_example_registry_matches_site_schema():

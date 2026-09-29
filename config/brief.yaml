@@ -2,10 +2,14 @@
 # Every system (Site Atlas, Tagger, Hunter) reads its constraints from here.
 # Validated by schemas/brief.schema.json.
 
-brief_version: 2
+brief_version: 3
 character: Patrick Bateman (American Psycho, 2000)
 look: 1980s Wall Street executive
 use: one-time costume
+
+runs:
+  planned: [20, 30]      # full end-to-end runs after the build sessions
+  learn_from: [listing ratings, hashtag votes]
 
 dates:
   created: 2026-09-29
@@ -65,3 +69,12 @@ needed:
       - Washable and fabric-safe, because the suit is the user's own.
       - Squeeze or splatter bottle for easy application.
     note: Axe and blood are sometimes sold together as a kit; kits count toward both.
+
+extras:
+  want: Recommendations for add-ons that would make the costume look tough.
+  sources:
+    - Iconic details from the film.
+    - Accessories that match the learned taste profile.
+  budget_rule: >-
+    Show each add-on's cost against what is left of the $75 after the core items.
+    Flag anything that would push the total over budget; never add it to the kit automatically.

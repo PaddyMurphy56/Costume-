@@ -1,10 +1,13 @@
 # Costume: deep resale-shopping system
 
-A multi-session build of a system that finds deep-cut items across a very wide range of shopping sites. Tags generated from an item's text and photo guide the search. The first job is the Patrick Bateman costume brief in `config/brief.yaml`: a briefcase, a fake axe and fake blood for **$75 total including shipping and tax**, bought by **2026-10-15**.
+A multi-session build of a system that finds deep-cut items across a very wide range of shopping sites. Tags generated from an item's text and photo guide the search. The first job is the Patrick Bateman costume brief in `config/brief.yaml`: a briefcase, a fake axe and fake blood for **$75 total including shipping and tax**, bought by **2026-10-15**. The system should also recommend add-ons that would make the costume look tough.
 
 Read `docs/ROADMAP.md` before doing anything. It holds the build order, the session briefs, the contracts and the environment facts.
 
 ## Session model
+- **There are two phases.** First, five build sessions, one per system. Then the finished system runs end to end **20–30 times** before the buy-by date (ROADMAP §6).
+- **Each run makes the system smarter.** The user rates listings and hashtags. Those ratings drive a hashtag popularity board, a taste/vibe profile, site yield, and advanced ranking and tag generation.
+- Build every system to be run repeatedly: run logs, stable IDs, idempotent steps, and a known cost per run.
 - Each system is built in its own new session:
   - S1 Site Atlas
   - S2 Tagger

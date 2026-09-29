@@ -30,6 +30,28 @@
         "est_tax_rate": {"type": "number", "minimum": 0, "maximum": 0.2}
       }
     },
+    "runs": {
+      "type": "object",
+      "required": ["planned"],
+      "properties": {
+        "planned": {
+          "type": "array",
+          "items": {"type": "integer", "minimum": 1},
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "learn_from": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "extras": {
+      "type": "object",
+      "required": ["want", "budget_rule"],
+      "properties": {
+        "want": {"type": "string"},
+        "sources": {"type": "array", "items": {"type": "string"}},
+        "budget_rule": {"type": "string"}
+      }
+    },
     "owned": {"type": "array", "items": {"type": "string"}},
     "needed": {
       "type": "array",
