@@ -30,10 +30,11 @@ The first real use is the costume brief in `config/brief.yaml`, but the Atlas sh
 Before you build anything, run a workflow that works out **the best way to build the Site Atlas**. ROADMAP §5 gives the minimum bar:
 1. frame
 2. sweep tools and prior art
-3. build at least two genuinely different candidate methods
-4. bake-off with the scoring rule written first
-5. challenge the winner
-6. decision record
+3. **ask the user 5–10 questions** about how the Site Atlas should work, and **suggest 1–5 things to implement**; wait for the answers before locking the design
+4. build at least two genuinely different candidate methods
+5. bake-off with the scoring rule written first
+6. challenge the winner
+7. decision record
 
 Record it in `research/01-site-atlas/method-discovery.md`, using `docs/templates/method-discovery.md`. Questions worth answering:
 - How do experienced resellers and bargain hunters find obscure sites?
@@ -52,13 +53,14 @@ You can and should create agents in `.claude/agents/` whenever that would make t
 4. **A labeled listing sample for S2:** real listings with photo, seller title, seller tags or attributes, site and URL. Cover briefcases, axes and fake blood, plus some general items. S2 uses this as ground truth to test tags against.
 5. **A rerunnable workflow**, such as a skill or script, so the Atlas can be refreshed and grown later.
 6. **A decision record** in `docs/decisions/`.
-7. **A handoff note** in `docs/handoffs/` (template in `docs/templates/`).
-8. **The Session 2 kickoff prompt** in `docs/sessions/02-tagger.md`, written from what you actually built and learned. Carry forward the S2 brief from ROADMAP §8, including its requirement that tag generation be advanced and learn from ratings.
+7. **A handoff note** in `docs/handoffs/` (template in `docs/templates/`). Include the questions you asked, the user's answers, and which suggestions were accepted.
+8. **The Session 2 kickoff prompt** in `docs/sessions/02-tagger.md`, written from what you actually built and learned. Carry forward the S2 brief from ROADMAP §8, including its requirement that tag generation be advanced and learn from ratings. Also carry forward the rule that every session asks 5–10 questions and suggests 1–5 things to implement.
 
 ## Done when
 - At least 150 live sites are in the registry. That is a floor: set a higher target if Method Discovery supports it.
 - Every site has an access result.
 - The listing sample exists.
+- The user's answers to your questions are reflected in what you built.
 - Tests and lint pass.
 - The deliverables above are committed and pushed on a branch with a draft PR.
 

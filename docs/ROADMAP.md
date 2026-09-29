@@ -108,6 +108,11 @@ Every session, S1 through S5, is a full session of its own whose job is to build
 
 - **Frame.** Inputs, outputs, constraints, definition of done and a timebox.
 - **Sweep.** Look at tools, services, APIs, MCP servers and connectors, models and datasets, and at prior art: how other people have solved this. Check whether each option is actually reachable from this environment.
+- **Ask and suggest.** Bring the user in before any design is locked:
+  - **Ask 5–10 questions** about how this system should work. Make them specific and informed by the sweep, each with a sensible default, so the user can answer fast or accept the defaults.
+  - **Suggest 1–5 things to implement** that would make the system better. Each gets a one-line reason and a rough cost in time.
+  - **Wait for the answers.** Use them to shape the candidates and the decision. If the user doesn't answer, go with the stated defaults and say so.
+  - **Record it.** Keep the questions, the answers, and which suggestions were accepted or declined.
 - **Candidates.** Come up with at least two genuinely different methods, one of them a cheap baseline.
 - **Bake-off.** Run the candidates on the same inputs. Write the scoring rule down *before* looking at results.
 - **Challenge.** Actively look for holes in the winning method.

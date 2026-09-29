@@ -23,6 +23,7 @@ Read `docs/ROADMAP.md` before doing anything. It holds the build order, the sess
   - S5 Audit & Hardening
 - The kickoff prompt for each session is in `docs/sessions/`.
 - **Every session starts with Method Discovery.** Work out the best way to build that part before building it (ROADMAP §5). Keep the record in `research/<session>/method-discovery.md`.
+- **Every session asks and suggests.** During creation, ask the user **5–10 questions** about how the system should work, and **suggest 1–5 things to implement**. Wait for the answers before locking the design. Record the questions, the answers and the accepted suggestions in the handoff.
 - Create agents in `.claude/agents/` whenever that would make the system better.
 - Stay inside your session's scope. Finish by writing a handoff note (`docs/handoffs/`) and the next session's kickoff prompt (`docs/sessions/`).
 

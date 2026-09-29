@@ -12,6 +12,9 @@ Give the exact commands.
 ## Numbers
 Include counts, scores, cost per run and time per run.
 
+## User Q&A and suggestions
+List the questions asked, the user's answers (or the default used), and each suggestion with whether it was accepted and built.
+
 ## Decisions
 Link to the records in `docs/decisions/`.
 
